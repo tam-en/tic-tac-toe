@@ -44,8 +44,8 @@ let scoreCard = [[
 0, //index 3 = ticTac's 1 column score
 0, //index 4 = ticTac's 2 column score
 0, //index 5 = ticTac's 3 column score
-0, //index 6 = ticTac's n-slope score
-0, //index 7 = ticTac's p-slope score
+0, //index 6 = ticTac's n-slope score (negative slope)
+0, //index 7 = ticTac's p-slope score (positive slope)
 ], [
 0, //index 0 = toe's A row score
 0, //index 1 = toe's B row score
@@ -303,8 +303,8 @@ function clearTheBoard() {
 	]];
 
 	var imageVar = "img/T.png";
-	var mugga = "A1n_img";
-	document.getElementById(mugga).src = imageVar;
+	var targetId = "A1n_img";
+	document.getElementById(targetId).src = imageVar;
 
 	var imageVar = "img/i_lc.png";
 	var targetId = 'A2_img';
