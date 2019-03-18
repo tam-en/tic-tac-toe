@@ -1,9 +1,5 @@
 // GLOBAL VARIABLES ------------------------------------------
-
-//const startButtonText = 'start game!'
 let currentPlayer = '';
-const ticTacState = 'neutral';
-const toeState = 'neutral';
 let allTheCellsArray = [];
 let scoreCard = [];
 
@@ -22,22 +18,23 @@ const getPlayer = function() {
 
 getPlayer();
 
-function setUpArrays() {
+const setUpArrays = function() {
 	// starting values for all of the cells----------------------
-	// (the string "ticTac" or "toe" will occupy index 1 in each sub array once the cell has been occupied)
+	// (the string "ticTac" or "toe" will occupy index 1 in each subarray once the cell has been occupied)
 	allTheCellsArray = [
-		['A1n',	'', 'A', '1', 'n', '0'],
-		['A2',	'', 'A', '2', '0', '0'],
-		['A3p',	'', 'A', '3', '0', 'p'],
-		['B1',	'', 'B', '1', '0', '0'],
-		['B2np', '', 'B', '2', 'n', 'p'],
-		['B3',	'', 'B', '3', '0', '0'],
-		['C1p',	'', 'C', '1', '0', 'p'],
-		['C2',	'', 'C', '2', '0', '0'],
-		['C3n', '', 'C', '3', 'n', '0']
+		['A1n',	'', 'A', '1', 'n', '0', 'T.png'],
+		['A2',	'', 'A', '2', '0', '0', 'i_lc.png'],
+		['A3p',	'', 'A', '3', '0', 'p', 'C.png'],
+		['B1',	'', 'B', '1', '0', '0', 't_lc.png'],
+		['B2np', '', 'B', '2', 'n', 'p', 'A.png'],
+		['B3',	'', 'B', '3', '0', '0', 'c_lc.png'],
+		['C1p',	'', 'C', '1', '0', 'p', 'T.png'],
+		['C2',	'', 'C', '2', '0', '0', 'o_lc.png'],
+		['C3n', '', 'C', '3', 'n', '0', 'E.png']
 	];
 
-	//scoreCard array . . . ticTac=index 0, toe=index 1 ---------
+	// scoreCard array . . . ticTac=index 0, toe=index 1 ---------
+	// after each turn, each row, column, and positive/negative slope will be checked to see if it's full
 	scoreCard = [[
 		0, //index 0 = ticTac's A row score
 		0, //index 1 = ticTac's B row score
@@ -61,48 +58,38 @@ function setUpArrays() {
 
 setUpArrays();
 
-//all the things that gotta happen when a cell gets clicked -----
+// "clickedCell" function = the things that gotta happen when a cell gets clicked -----
+const clickedCell = function(event) {
 
-let clickedCell = function(event) {
-
-	var currentCellArrayLocation;
+	let currentCellArrayLocation;
 
 	// first, locate correct cell in allTheCellsArray
-
-	var cellObject = this.id.toString();
+	let cellObject = this.id.toString();
 	for (i = 0; i < allTheCellsArray.length; i++) {
 		if (allTheCellsArray[i][0] === cellObject) {
 			currentCellArrayLocation = i;
 		};
-	};
+	};	
 
-	// next, determine if that cell has already been occupied
+	// next, determine if that cell has already been occupied; 
+	// if not, assign player to that cell, display correct image in it, and update scoreCard array
 
-	if(allTheCellsArray[currentCellArrayLocation][1] === 'ticTac'|| allTheCellsArray[currentCellArrayLocation][1] === 'toe') {
-		console.log('that tickles! cell occupied by', allTheCellsArray[currentCellArrayLocation][1]);
-	}
-	else {
+	if(allTheCellsArray[currentCellArrayLocation][1] !== 'ticTac' && allTheCellsArray[currentCellArrayLocation][1] !== 'toe') {		
 		allTheCellsArray[currentCellArrayLocation][1] = currentPlayer;
+		let avatarSrc = '';
 		if (currentPlayer === 'ticTac') {
-			var avatarSrc = "img/ticTac_neutral.png";
+			avatarSrc = "img/ticTac_neutral.png";
 		} else {
-			var avatarSrc = "img/toe_neutral.png";
+			avatarSrc = "img/toe_neutral.png";
 		};
-
-		var imageId = allTheCellsArray[currentCellArrayLocation][0] + "_img";
-
+		let imageId = allTheCellsArray[currentCellArrayLocation][0] + "_img";
 		document.getElementById(imageId).src = avatarSrc;
 
-
 		//establish a numeric value for the current player for use in scoreCard index navigation
-		if (currentPlayer === 'ticTac') {
-			var playerIndex = 0;
-		} else {
-			var playerIndex = 1;
-		};
-
-		// increment  ABC123np numbers in scoreCard array ------- 
-
+		let playerIndex = '';
+		currentPlayer === 'ticTac' ? playerIndex = 0 : playerIndex = 1;
+		
+		// increment row, cell, and slope values in scoreCard array ------- 
 		switch (allTheCellsArray[currentCellArrayLocation][2]) {
 			case 'A':
 				scoreCard[playerIndex][0]++;
@@ -114,7 +101,7 @@ let clickedCell = function(event) {
 				scoreCard[playerIndex][2]++;
 				break;
 			default:
-			};
+		};
 
 		switch (allTheCellsArray[currentCellArrayLocation][3]) {
 			case '1':
@@ -127,45 +114,42 @@ let clickedCell = function(event) {
 				scoreCard[playerIndex][5]++;
 				break;
 			default:
-			};
+		};
 
 		switch (allTheCellsArray[currentCellArrayLocation][4]) {
 			case 'n':
 				scoreCard[playerIndex][6]++;
 				break;
 			default:
-			};
+		};
 
 		switch (allTheCellsArray[currentCellArrayLocation][5]) {
 			case 'p':
 				scoreCard[playerIndex][7]++;
 				break;
 			default:
-			};	
+		};	
 
 		//check for a winner
-
 		var nextSteps = 'finish turn';
-
-		for(q = 0; q < 8; q++) {
-			if(scoreCard[0][q] === 3) {
+		for(i = 0; i < 8; i++) {
+			if(scoreCard[0][i] === 3) {
 				nextSteps = 'ticTac wins';
 				gameOver('ticTac');
 			}
 		};
-		for(q = 0; q < 8; q++) {
-			if(scoreCard[1][q] === 3) {
+		for(i = 0; i < 8; i++) {
+			if(scoreCard[1][i] === 3) {
 				nextSteps = 'toe wins';
 				gameOver('toe');
 			}
 		};
 
-		//check for a tie 
-
+		// check to see if there are any empty cells left: if there are, finish turn; if not, game's a tie.
 		if(nextSteps === 'finish turn') { 
 			let emptyCellCount = 0;
-			for (z = 0; z < allTheCellsArray.length; z++) {
-				if (allTheCellsArray[z][1] === '') {
+			for (i = 0; i < allTheCellsArray.length; i++) {
+				if (allTheCellsArray[i][1] === '') {
 					emptyCellCount++;
 				};
 			};
@@ -175,15 +159,13 @@ let clickedCell = function(event) {
 			};
 		};
 
-		// finish the turn 
-
+		// finish the turn by switching current player and the avatars
 		if(nextSteps === 'finish turn') {
 			var avatarImage = "img/" + currentPlayer +"_blank.png";
 			var avatarImageId = currentPlayer + "Avatar";
 			document.getElementById(avatarImageId).src = avatarImage;
 
 			//switch current player
-
 			if (currentPlayer === 'ticTac') {
 				currentPlayer = 'toe';
 			} else {
@@ -191,14 +173,12 @@ let clickedCell = function(event) {
 			};
 
 			//change the avatar for the new currrent player
-
 			var avatarImage = "img/" + currentPlayer +"_turn.png";
 			var avatarImageId = currentPlayer + "Avatar";
-
 			document.getElementById(avatarImageId).src = avatarImage;
 		}
 
-	}; //end of else statement tasks
+	}; 
 
 }; //end of clickedCell function
 
@@ -231,35 +211,23 @@ function gameOver(winner) {
 		document.getElementById(cell[0]).removeEventListener('click', clickedCell);
 	});
 
+	let winnerImg = "img/" + winner + "_happy.png";
+	let loser = '';
+	let loserImg = '';
+
 	if(winner === 'toe') {
-		let ticTacAvatarImage = "img/ticTac_loses.png";
-		let avatarImage = 'ticTacAvatar';
-		document.getElementById(avatarImage).src = ticTacAvatarImage;
-
-		let toeAvatarImage = "img/toe_wins.png";
-		avatarImage = 'toeAvatar';
-		document.getElementById(avatarImage).src = toeAvatarImage;
-
+		loser = 'ticTac';
+		document.getElementById('ticTacAvatar').src = "img/ticTac_loses.png";
+		document.getElementById('toeAvatar').src = 'img/toe_wins.png';
 	} else {
-		var ticTacAvatarImage = "img/ticTac_wins.png";
-		var avatarImage = 'ticTacAvatar';
-		document.getElementById(avatarImage).src = ticTacAvatarImage;
-
-		var toeAvatarImage = "img/toe_loses.png";
-		var avatarImage = 'toeAvatar';
-		document.getElementById(avatarImage).src = toeAvatarImage;
-
+		loser = 'toe';
+		document.getElementById('ticTacAvatar').src = "img/ticTac_wins.png";
+		document.getElementById('toeAvatar').src = "img/toe_loses.png";
 	};
 
+	loserImg = "img/" + loser + "_sad.png"
+
 	// And now we make the cells occupied by the winner happy, and the loser's cells rather sad.
-
-	let loser = ''
-	if (winner === "ticTac"){ loser = 'toe' } 
-	else { loser = 'ticTac' };
-
-	let winnerImg = "img/" + winner + "_happy.png";
-	let loserImg = "img/" + loser + "_sad.png";
-
 	allTheCellsArray.forEach(cell => {
 		let targetId = cell[0] + "_img"
 		if(cell[1] == winner) {
@@ -268,79 +236,20 @@ function gameOver(winner) {
 			document.getElementById(targetId).src = loserImg;
 		}
 	});
-
-
-	// 	if(cell[1] == winner)
-
-
-
-
-	// 	if(cell[1] === winner) {
-	// 		var avatarSrc = "img/ticTac_neutral.png";
-	// 	if (cell[1] === 'ticTac') {
-			
-	// 	} else {
-	// 		var avatarSrc = "img/toe_neutral.png";
-	// 	};
-
-
-	// 	} else if(cell[1] != '') {
-	// 		console.log(cell[0], "is a losing cell");
-	// 	}
-	// })
-
-
 };
 
 function clearTheBoard() {
-	let toeAvatarImage = "img/toe_blank.png";
-	let avatarImage = 'toeAvatar';
-	document.getElementById(avatarImage).src = toeAvatarImage;
-
-	ticTacAvatarImage = "img/ticTac_blank.png";
-	avatarImage = 'ticTacAvatar';
-	document.getElementById(avatarImage).src = ticTacAvatarImage;
+	document.getElementById('toeAvatar').src = "img/toe_blank.png";
+	document.getElementById('ticTacAvatar').src = "img/ticTac_blank.png";
 
 	setUpArrays();
 
-	let imageVar = "img/T.png";
-	let targetId = "A1n_img";
-	document.getElementById(targetId).src = imageVar;
+	allTheCellsArray.forEach(cell => {
+		let imageVar = "img/" + cell[6];
+		let targetId = cell[0] + "_img";
+		document.getElementById(targetId).src = imageVar;
+	})
 
-	imageVar = "img/i_lc.png";
-	targetId = 'A2_img';
-	document.getElementById(targetId).src = imageVar;
-
-	imageVar = "img/C.png";
-	targetId = 'A3p_img';
-	document.getElementById(targetId).src = imageVar;
-
-	imageVar = "img/t_lc.png";
-	targetId = 'B1_img';
-	document.getElementById(targetId).src = imageVar;
-
-	imageVar = "img/A.png";
-	targetId = 'B2np_img';
-	document.getElementById(targetId).src = imageVar;
-
-	imageVar = "img/c_lc.png";
-	targetId = 'B3_img';
-	document.getElementById(targetId).src = imageVar;
-
-	imageVar = "img/T.png";
-	targetId = 'C1p_img';
-	document.getElementById(targetId).src = imageVar;
-
-	imageVar = "img/o_lc.png";
-	targetId = 'C2_img';
-	document.getElementById(targetId).src = imageVar;
-
-	imageVar = "img/E.png";
-	targetId = 'C3n_img';
-	document.getElementById(targetId).src = imageVar;
-
-getPlayer();
-
-getListeners();
-
+	getPlayer();
+	getListeners();
 }
