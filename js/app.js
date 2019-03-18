@@ -1,13 +1,11 @@
-// global variables------------------------------------------
+// GLOBAL VARIABLES ------------------------------------------
 
-const startButtonText = 'start game!'
+//const startButtonText = 'start game!'
 let currentPlayer = '';
 const ticTacState = 'neutral';
 const toeState = 'neutral';
 let allTheCellsArray = [];
 let scoreCard = [];
-
-
 
 //function to randomly assign initial player-----------------
 
@@ -20,7 +18,6 @@ const getPlayer = function() {
 	let avatarImage = "img/" + currentPlayer +"_turn.png";
 	let avatarImageId = currentPlayer + "Avatar";
 	document.getElementById(avatarImageId).src = avatarImage;
-
 }
 
 getPlayer();
@@ -63,7 +60,6 @@ function setUpArrays() {
 }
 
 setUpArrays();
-
 
 //all the things that gotta happen when a cell gets clicked -----
 
@@ -236,12 +232,12 @@ function gameOver(winner) {
 	});
 
 	if(winner === 'toe') {
-		var ticTacAvatarImage = "img/ticTac_blank.png";
-		var avatarImage = 'ticTacAvatar';
+		let ticTacAvatarImage = "img/ticTac_loses.png";
+		let avatarImage = 'ticTacAvatar';
 		document.getElementById(avatarImage).src = ticTacAvatarImage;
 
-		var toeAvatarImage = "img/toe_wins.png";
-		var avatarImage = 'toeAvatar';
+		let toeAvatarImage = "img/toe_wins.png";
+		avatarImage = 'toeAvatar';
 		document.getElementById(avatarImage).src = toeAvatarImage;
 
 	} else {
@@ -249,7 +245,7 @@ function gameOver(winner) {
 		var avatarImage = 'ticTacAvatar';
 		document.getElementById(avatarImage).src = ticTacAvatarImage;
 
-		var toeAvatarImage = "img/toe_blank.png";
+		var toeAvatarImage = "img/toe_loses.png";
 		var avatarImage = 'toeAvatar';
 		document.getElementById(avatarImage).src = toeAvatarImage;
 
@@ -258,19 +254,14 @@ function gameOver(winner) {
 	// And now we make the cells occupied by the winner happy, and the loser's cells rather sad.
 
 	let loser = ''
-	if (winner === "ticTac"){
-		loser = 'toe'; 
-	} else {
-		loser = 'ticTac';
-	}
+	if (winner === "ticTac"){ loser = 'toe' } 
+	else { loser = 'ticTac' };
 
 	let winnerImg = "img/" + winner + "_happy.png";
 	let loserImg = "img/" + loser + "_sad.png";
 
-
 	allTheCellsArray.forEach(cell => {
 		let targetId = cell[0] + "_img"
-		console.log("heya!", targetId, "yo!", document.getElementById(targetId).src)
 		if(cell[1] == winner) {
 			document.getElementById(targetId).src = winnerImg;
 		} else if(cell[1] == loser) {
