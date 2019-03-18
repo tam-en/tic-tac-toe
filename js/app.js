@@ -4,6 +4,9 @@ const startButtonText = 'start game!'
 let currentPlayer = '';
 const ticTacState = 'neutral';
 const toeState = 'neutral';
+let allTheCellsArray = [];
+let scoreCard = [];
+
 
 
 //function to randomly assign initial player-----------------
@@ -14,50 +17,52 @@ const getPlayer = function() {
 	} else {
 		currentPlayer = 'toe';
 	};
-	var avatarImage = "img/" + currentPlayer +"_turn.png";
-	var avatarImageId = currentPlayer + "Avatar";
+	let avatarImage = "img/" + currentPlayer +"_turn.png";
+	let avatarImageId = currentPlayer + "Avatar";
 	document.getElementById(avatarImageId).src = avatarImage;
 
 }
+
 getPlayer();
 
-//starting values for all of the cells----------------------
+function setUpArrays() {
+	// starting values for all of the cells----------------------
+	// (the string "ticTac" or "toe" will occupy index 1 in each sub array once the cell has been occupied)
+	allTheCellsArray = [
+		['A1n',	'', 'A', '1', 'n', '0'],
+		['A2',	'', 'A', '2', '0', '0'],
+		['A3p',	'', 'A', '3', '0', 'p'],
+		['B1',	'', 'B', '1', '0', '0'],
+		['B2np', '', 'B', '2', 'n', 'p'],
+		['B3',	'', 'B', '3', '0', '0'],
+		['C1p',	'', 'C', '1', '0', 'p'],
+		['C2',	'', 'C', '2', '0', '0'],
+		['C3n', '', 'C', '3', 'n', '0']
+	];
 
-let allTheCellsArray = [
-['A1n',	'', 'A', '1', 'n', '0' ],
-['A2',	'', 'A', '2', '0', '0'],
-['A3p',	'', 'A', '3', '0', 'p'],
-['B1',	'', 'B', '1', '0', '0'],
-['B2np', '', 'B', '2', 'n', 'p'],
-['B3',	'', 'B', '3', '0', '0'],
-['C1p',	'', 'C', '1', '0', 'p'],
-['C2',	'', 'C', '2', '0', '0'],
-['C3n', '', 'C', '3', 'n', '0']
-];
+	//scoreCard array . . . ticTac=index 0, toe=index 1 ---------
+	scoreCard = [[
+		0, //index 0 = ticTac's A row score
+		0, //index 1 = ticTac's B row score
+		0, //index 2 = ticTac's C row score
+		0, //index 3 = ticTac's 1 column score
+		0, //index 4 = ticTac's 2 column score
+		0, //index 5 = ticTac's 3 column score
+		0, //index 6 = ticTac's n-slope score (negative slope)
+		0, //index 7 = ticTac's p-slope score (positive slope)
+		], [
+		0, //index 0 = toe's A row score
+		0, //index 1 = toe's B row score
+		0, //index 2 = toe's C row score
+		0, //index 3 = toe's 1 column score
+		0, //index 4 = toe's 2 column score
+		0, //index 5 = toe's 3 column score
+		0, //index 6 = toe's n-slope score
+		0, //index 7 = toe's p-slope score
+	]];
+}
 
-//scoreCard array . . . ticTac=index 0, toe=index 1 ---------
-
-let scoreCard = [[
-0, //index 0 = ticTac's A row score
-0, //index 1 = ticTac's B row score
-0, //index 2 = ticTac's C row score
-0, //index 3 = ticTac's 1 column score
-0, //index 4 = ticTac's 2 column score
-0, //index 5 = ticTac's 3 column score
-0, //index 6 = ticTac's n-slope score (negative slope)
-0, //index 7 = ticTac's p-slope score (positive slope)
-], [
-0, //index 0 = toe's A row score
-0, //index 1 = toe's B row score
-0, //index 2 = toe's C row score
-0, //index 3 = toe's 1 column score
-0, //index 4 = toe's 2 column score
-0, //index 5 = toe's 3 column score
-0, //index 6 = toe's n-slope score
-0, //index 7 = toe's p-slope score
-]];
-
-
+setUpArrays();
 
 
 //all the things that gotta happen when a cell gets clicked -----
@@ -202,18 +207,12 @@ let clickedCell = function(event) {
 }; //end of clickedCell function
 
 
-//event listeners!-------------------------------------------
+// Event listeners for each cell!-------------------------------------------
 
 function getListeners() {
-	document.getElementById("A1n").addEventListener('click', clickedCell);
-	document.getElementById("A2").addEventListener('click', clickedCell);
-	document.getElementById("A3p").addEventListener('click', clickedCell);
-	document.getElementById("B1").addEventListener('click', clickedCell);
-	document.getElementById("B2np").addEventListener('click', clickedCell);
-	document.getElementById("B3").addEventListener('click', clickedCell);
-	document.getElementById("C1p").addEventListener('click', clickedCell);
-	document.getElementById("C2").addEventListener('click', clickedCell);
-	document.getElementById("C3n").addEventListener('click', clickedCell);
+	allTheCellsArray.forEach(cell => {
+		document.getElementById(cell[0]).addEventListener('click', clickedCell);
+	});
 	document.getElementById("reStart").addEventListener('click', clearTheBoard);
 };
 
@@ -231,15 +230,10 @@ function tiedGame() {
 
 
 function gameOver(winner) {
-	document.getElementById("A1n").removeEventListener('click', clickedCell);
-	document.getElementById("A2").removeEventListener('click', clickedCell);
-	document.getElementById("A3p").removeEventListener('click', clickedCell);
-	document.getElementById("B1").removeEventListener('click', clickedCell);
-	document.getElementById("B2np").removeEventListener('click', clickedCell);
-	document.getElementById("B3").removeEventListener('click', clickedCell);
-	document.getElementById("C1p").removeEventListener('click', clickedCell);
-	document.getElementById("C2").removeEventListener('click', clickedCell);
-	document.getElementById("C3n").removeEventListener('click', clickedCell);
+	// turn off listeners so players can't occupy additional cells after someone has won.
+	allTheCellsArray.forEach(cell => {
+		document.getElementById(cell[0]).removeEventListener('click', clickedCell);
+	});
 
 	if(winner === 'toe') {
 		var ticTacAvatarImage = "img/ticTac_blank.png";
@@ -249,6 +243,7 @@ function gameOver(winner) {
 		var toeAvatarImage = "img/toe_wins.png";
 		var avatarImage = 'toeAvatar';
 		document.getElementById(avatarImage).src = toeAvatarImage;
+
 	} else {
 		var ticTacAvatarImage = "img/ticTac_wins.png";
 		var avatarImage = 'ticTacAvatar';
@@ -259,83 +254,98 @@ function gameOver(winner) {
 		document.getElementById(avatarImage).src = toeAvatarImage;
 
 	};
+
+	// And now we make the cells occupied by the winner happy, and the loser's cells rather sad.
+
+	let loser = ''
+	if (winner === "ticTac"){
+		loser = 'toe'; 
+	} else {
+		loser = 'ticTac';
+	}
+
+	let winnerImg = "img/" + winner + "_happy.png";
+	let loserImg = "img/" + loser + "_sad.png";
+
+
+	allTheCellsArray.forEach(cell => {
+		let targetId = cell[0] + "_img"
+		console.log("heya!", targetId, "yo!", document.getElementById(targetId).src)
+		if(cell[1] == winner) {
+			document.getElementById(targetId).src = winnerImg;
+		} else if(cell[1] == loser) {
+			document.getElementById(targetId).src = loserImg;
+		}
+	});
+
+
+	// 	if(cell[1] == winner)
+
+
+
+
+	// 	if(cell[1] === winner) {
+	// 		var avatarSrc = "img/ticTac_neutral.png";
+	// 	if (cell[1] === 'ticTac') {
+			
+	// 	} else {
+	// 		var avatarSrc = "img/toe_neutral.png";
+	// 	};
+
+
+	// 	} else if(cell[1] != '') {
+	// 		console.log(cell[0], "is a losing cell");
+	// 	}
+	// })
+
+
 };
 
 function clearTheBoard() {
-	var toeAvatarImage = "img/toe_blank.png";
-	var avatarImage = 'toeAvatar';
+	let toeAvatarImage = "img/toe_blank.png";
+	let avatarImage = 'toeAvatar';
 	document.getElementById(avatarImage).src = toeAvatarImage;
 
-	var ticTacAvatarImage = "img/ticTac_blank.png";
-	var avatarImage = 'ticTacAvatar';
+	ticTacAvatarImage = "img/ticTac_blank.png";
+	avatarImage = 'ticTacAvatar';
 	document.getElementById(avatarImage).src = ticTacAvatarImage;
 
-	allTheCellsArray = [
-	['A1n',	'', 'A', '1', 'n', '0' ],
-	['A2',	'', 'A', '2', '0', '0'],
-	['A3p',	'', 'A', '3', '0', 'p'],
-	['B1',	'', 'B', '1', '0', '0'],
-	['B2np', '', 'B', '2', 'n', 'p'],
-	['B3',	'', 'B', '3', '0', '0'],
-	['C1p',	'', 'C', '1', '0', 'p'],
-	['C2',	'', 'C', '2', '0', '0'],
-	['C3n', '', 'C', '3', 'n', '0']
-	];
+	setUpArrays();
 
-	scoreCard = [[
-	0, //index 0 = ticTac's A row score
-	0, //index 1 = ticTac's B row score
-	0, //index 2 = ticTac's C row score
-	0, //index 3 = ticTac's 1 column score
-	0, //index 4 = ticTac's 2 column score
-	0, //index 5 = ticTac's 3 column score
-	0, //index 6 = ticTac's n-slope score
-	0, //index 7 = ticTac's p-slope score
-	], [
-	0, //index 0 = toe's A row score
-	0, //index 1 = toe's B row score
-	0, //index 2 = toe's C row score
-	0, //index 3 = toe's 1 column score
-	0, //index 4 = toe's 2 column score
-	0, //index 5 = toe's 3 column score
-	0, //index 6 = toe's n-slope score
-	0, //index 7 = toe's p-slope score
-	]];
-
-	var imageVar = "img/T.png";
-	var targetId = "A1n_img";
+	let imageVar = "img/T.png";
+	let targetId = "A1n_img";
 	document.getElementById(targetId).src = imageVar;
 
-	var imageVar = "img/i_lc.png";
-	var targetId = 'A2_img';
+	imageVar = "img/i_lc.png";
+	targetId = 'A2_img';
 	document.getElementById(targetId).src = imageVar;
 
-	var imageVar = "img/C.png";
-	var targetId = 'A3p_img';
+	imageVar = "img/C.png";
+	targetId = 'A3p_img';
 	document.getElementById(targetId).src = imageVar;
 
-	var imageVar = "img/t_lc.png";
-	var targetId = 'B1_img';
+	imageVar = "img/t_lc.png";
+	targetId = 'B1_img';
 	document.getElementById(targetId).src = imageVar;
 
-	var imageVar = "img/A.png";
-	var targetId = 'B2np_img';
+	imageVar = "img/A.png";
+	targetId = 'B2np_img';
 	document.getElementById(targetId).src = imageVar;
 
-	var imageVar = "img/c_lc.png";
-	var targetId = 'B3_img';
+	imageVar = "img/c_lc.png";
+	targetId = 'B3_img';
 	document.getElementById(targetId).src = imageVar;
 
-	var imageVar = "img/T.png";
-	var targetId = 'C1p_img';
+	imageVar = "img/T.png";
+	targetId = 'C1p_img';
 	document.getElementById(targetId).src = imageVar;
 
-	var imageVar = "img/o_lc.png";
-	var targetId = 'C2_img';
+	imageVar = "img/o_lc.png";
+	targetId = 'C2_img';
 	document.getElementById(targetId).src = imageVar;
 
-	var imageVar = "img/E.png";
-	var targetId = 'C3n_img';
+	imageVar = "img/E.png";
+	targetId = 'C3n_img';
 	document.getElementById(targetId).src = imageVar;
 
 getPlayer();
