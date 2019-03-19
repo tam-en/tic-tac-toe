@@ -100,7 +100,7 @@ const clickedCell = function(event) {
 		allTheCellsArray[currentCellArrayLocation][1] = currentPlayer;
 		let avatarSrc = '';
 		if (currentPlayer === 'ticTac') {
-			avatarSrc = "img/ticTac_neutral.png";
+			avatarSrc = "img/tictac_neutral.png";
 		} else {
 			avatarSrc = "img/toe_neutral.png";
 		};
