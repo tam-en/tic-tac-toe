@@ -6,11 +6,7 @@ let scoreCard = [];
 //function to randomly assign initial player-----------------
 
 const getPlayer = function() {
-	if (Math.random() > .5) {
-		currentPlayer = 'ticTac';
-	} else {
-		currentPlayer = 'toe';
-	};
+	Math.random() > .5 ? currentPlayer = 'ticTac' : currentPlayer = 'toe';
 	let avatarImage = "img/" + currentPlayer +"_turn.png";
 	let avatarImageId = currentPlayer + "Avatar";
 	document.getElementById(avatarImageId).src = avatarImage;
@@ -58,12 +54,39 @@ const setUpArrays = function() {
 
 setUpArrays();
 
+// clearTheBoard function resets game board back to starting state
+const clearTheBoard = function() {
+	document.getElementById('toeAvatar').src = "img/toe_blank.png";
+	document.getElementById('ticTacAvatar').src = "img/ticTac_blank.png";
+
+	setUpArrays();
+
+	allTheCellsArray.forEach(cell => {
+		let imageVar = "img/" + cell[6];
+		let targetId = cell[0] + "_img";
+		document.getElementById(targetId).src = imageVar;
+	})
+
+	getPlayer();
+	getListeners();
+};
+
+const tiedGame = function() {
+	let ticTacAvatarImage = "img/ticTac_tie.png";
+	let avatarImage = 'ticTacAvatar';
+	document.getElementById(avatarImage).src = ticTacAvatarImage;
+
+	let toeAvatarImage = "img/toe_tie.png";
+	avatarImage = 'toeAvatar';
+	document.getElementById(avatarImage).src = toeAvatarImage;
+};
+
 // "clickedCell" function = the things that gotta happen when a cell gets clicked -----
 const clickedCell = function(event) {
 
 	let currentCellArrayLocation;
 
-	// first, locate correct cell in allTheCellsArray
+	// First, locate correct cell in allTheCellsArray
 	let cellObject = this.id.toString();
 	for (i = 0; i < allTheCellsArray.length; i++) {
 		if (allTheCellsArray[i][0] === cellObject) {
@@ -71,9 +94,8 @@ const clickedCell = function(event) {
 		};
 	};	
 
-	// next, determine if that cell has already been occupied; 
-	// if not, assign player to that cell, display correct image in it, and update scoreCard array
-
+	// Next, determine if that cell has already been occupied. 
+	// If it's unoccupied, assign current player to that cell, display correct image in it, and update scoreCard array
 	if(allTheCellsArray[currentCellArrayLocation][1] !== 'ticTac' && allTheCellsArray[currentCellArrayLocation][1] !== 'toe') {		
 		allTheCellsArray[currentCellArrayLocation][1] = currentPlayer;
 		let avatarSrc = '';
@@ -85,11 +107,11 @@ const clickedCell = function(event) {
 		let imageId = allTheCellsArray[currentCellArrayLocation][0] + "_img";
 		document.getElementById(imageId).src = avatarSrc;
 
-		//establish a numeric value for the current player for use in scoreCard index navigation
+		// Establish a numeric value for the current player for use in scoreCard index navigation.
 		let playerIndex = '';
 		currentPlayer === 'ticTac' ? playerIndex = 0 : playerIndex = 1;
 		
-		// increment row, cell, and slope values in scoreCard array ------- 
+		// Increment row, cell, and slope values in scoreCard array ------- 
 		switch (allTheCellsArray[currentCellArrayLocation][2]) {
 			case 'A':
 				scoreCard[playerIndex][0]++;
@@ -130,7 +152,7 @@ const clickedCell = function(event) {
 			default:
 		};	
 
-		//check for a winner
+		// Check to see if either ticTac or toe has won yet; if so, pass winner to the gameOver function
 		var nextSteps = 'finish turn';
 		for(i = 0; i < 8; i++) {
 			if(scoreCard[0][i] === 3) {
@@ -145,7 +167,8 @@ const clickedCell = function(event) {
 			}
 		};
 
-		// check to see if there are any empty cells left: if there are, finish turn; if not, game's a tie.
+		// If no one has won yet, "nextSteps" will still equal "finish turn.""
+		// Now we need to see if all the cells are occupied; if so, it's a tie.
 		if(nextSteps === 'finish turn') { 
 			let emptyCellCount = 0;
 			for (i = 0; i < allTheCellsArray.length; i++) {
@@ -159,7 +182,7 @@ const clickedCell = function(event) {
 			};
 		};
 
-		// finish the turn by switching current player and the avatars
+		// If no one has won, and it isn't a tie, finish turn by switching current player etc.
 		if(nextSteps === 'finish turn') {
 			var avatarImage = "img/" + currentPlayer +"_blank.png";
 			var avatarImageId = currentPlayer + "Avatar";
@@ -176,16 +199,16 @@ const clickedCell = function(event) {
 			var avatarImage = "img/" + currentPlayer +"_turn.png";
 			var avatarImageId = currentPlayer + "Avatar";
 			document.getElementById(avatarImageId).src = avatarImage;
+
+			// display "restart game" button if it's not already displaying
+			document.getElementById("reStart").src = "img/restart.png";
+
 		}
-
 	}; 
+}; 
 
-}; //end of clickedCell function
-
-
-// Event listeners for each cell!-------------------------------------------
-
-function getListeners() {
+// Turn on event listeners for each cell-------------------------------------------
+const getListeners = function() {
 	allTheCellsArray.forEach(cell => {
 		document.getElementById(cell[0]).addEventListener('click', clickedCell);
 	});
@@ -194,19 +217,8 @@ function getListeners() {
 
 getListeners();
 
-function tiedGame() {
-	var ticTacAvatarImage = "img/ticTac_tie.png";
-	var avatarImage = 'ticTacAvatar';
-	document.getElementById(avatarImage).src = ticTacAvatarImage;
-
-	var toeAvatarImage = "img/toe_tie.png";
-	var avatarImage = 'toeAvatar';
-	document.getElementById(avatarImage).src = toeAvatarImage;
-}
-
-
-function gameOver(winner) {
-	// turn off listeners so players can't occupy additional cells after someone has won.
+const gameOver = function(winner) {
+	// turn off listeners so players can't click/occupy cells after someone has won.
 	allTheCellsArray.forEach(cell => {
 		document.getElementById(cell[0]).removeEventListener('click', clickedCell);
 	});
@@ -227,7 +239,7 @@ function gameOver(winner) {
 
 	loserImg = "img/" + loser + "_sad.png"
 
-	// And now we make the cells occupied by the winner happy, and the loser's cells rather sad.
+	// And now we make the cells occupied by the winner happy, and the loser's cells rather sad :-(
 	allTheCellsArray.forEach(cell => {
 		let targetId = cell[0] + "_img"
 		if(cell[1] == winner) {
@@ -237,19 +249,3 @@ function gameOver(winner) {
 		}
 	});
 };
-
-function clearTheBoard() {
-	document.getElementById('toeAvatar').src = "img/toe_blank.png";
-	document.getElementById('ticTacAvatar').src = "img/ticTac_blank.png";
-
-	setUpArrays();
-
-	allTheCellsArray.forEach(cell => {
-		let imageVar = "img/" + cell[6];
-		let targetId = cell[0] + "_img";
-		document.getElementById(targetId).src = imageVar;
-	})
-
-	getPlayer();
-	getListeners();
-}
