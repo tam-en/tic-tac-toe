@@ -2,8 +2,27 @@
 let currentPlayer = '';
 let allTheCellsArray = [];
 let scoreCard = [];
+let emSize = 0;
 
-//function to randomly assign initial player-----------------
+// Detect viewport size and set emSize accordingly. CSS grid measurements are based on ems.
+
+const setEmSize = function() {
+	emSize = Math.max(document.documentElement.clientHeight);
+	if (window.innerHeight > window.innerWidth) {
+		// rows are defined in ems, and portrait grid requires 144 ems, hence this division:
+		emSize = (emSize/144).toString() + "px";
+		document.getElementById("body").style.fontSize = emSize;
+	} else {
+		// rows are defined in ems, and landscape grid require 130 ems, hence this division:
+		emSize = (emSize/130).toString() + "px";
+		document.getElementById("body").style.fontSize = emSize;
+	}
+}
+setEmSize();
+
+window.addEventListener("resize", setEmSize); // reset em size if window resizes.
+
+// Function to randomly assign initial player-----------------
 
 const getPlayer = function() {
 	Math.random() > .5 ? currentPlayer = 'ticTac' : currentPlayer = 'toe';
@@ -15,7 +34,7 @@ const getPlayer = function() {
 getPlayer();
 
 const setUpArrays = function() {
-	// starting values for all of the cells----------------------
+	// Starting values for all of the cells----------------------
 	// (the string "ticTac" or "toe" will occupy index 1 in each subarray once the cell has been occupied)
 	allTheCellsArray = [
 		['A1n',	'', 'A', '1', 'n', '0', 'T.png'],
@@ -54,7 +73,7 @@ const setUpArrays = function() {
 
 setUpArrays();
 
-// clearTheBoard function resets game board back to starting state
+// The clearTheBoard function resets game board back to starting state
 const clearTheBoard = function() {
 	document.getElementById('toeAvatar').src = "img/toe_blank.png";
 	document.getElementById('ticTacAvatar').src = "img/ticTac_blank.png";
@@ -81,7 +100,7 @@ const tiedGame = function() {
 	document.getElementById(avatarImage).src = toeAvatarImage;
 };
 
-// "clickedCell" function = the things that gotta happen when a cell gets clicked -----
+// The "clickedCell" function = the things that gotta happen when a cell gets clicked -----
 const clickedCell = function(event) {
 
 	let currentCellArrayLocation;
@@ -218,7 +237,7 @@ const getListeners = function() {
 getListeners();
 
 const gameOver = function(winner) {
-	// turn off listeners so players can't click/occupy cells after someone has won.
+	// Turn off listeners so players can't click/occupy cells after someone has won.
 	allTheCellsArray.forEach(cell => {
 		document.getElementById(cell[0]).removeEventListener('click', clickedCell);
 	});
@@ -239,7 +258,7 @@ const gameOver = function(winner) {
 
 	loserImg = "img/" + loser + "_sad.png"
 
-	// And now we make the cells occupied by the winner happy, and the loser's cells rather sad :-(
+	// And now we make the cells occupied by the winner happy, and the loser's cells a bit sad :-(
 	allTheCellsArray.forEach(cell => {
 		let targetId = cell[0] + "_img"
 		if(cell[1] == winner) {
